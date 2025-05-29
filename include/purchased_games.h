@@ -1,12 +1,11 @@
 #ifndef PURCHASED_GAMES_H
 #define PURCHASED_GAMES_H
 
-const int PLAYERID_SIZE = 8;
-const int LIBRARY_SIZE = 185218;
+#include <vector>
 
-struct Purchased_Games {
-    int playerId[PLAYERID_SIZE];
-    char library[LIBRARY_SIZE];
+struct PurchasedGames {
+    int playerId;
+    std::vector<int> gameIds;  // Lista de IDs dos jogos comprados
 };
 
 #endif
