@@ -22,7 +22,7 @@ int main() {
 //converterCSVparaBinario_Price("playstation/prices.csv", "bin/prices.bin"); 
 //converterCSVparaBinario_Achievement("playstation/achievements.csv", "bin/achievements.bin"); 
 //converterCSVparaBinario_PurchasedGames("playstation/purchased_games.csv", "bin/purchased_games.bin"); 
-converterCSVparaBinario_History("playstation/history.csv", "bin/history.bin");
+//converterCSVparaBinario_History("playstation/history.csv", "bin/history.bin");
 // ----------------------------------------------------------------------------------------
 
 

@@ -34,7 +34,6 @@ Thumbs.db
 CMakeFiles/
 CMakeCache.txt
 cmake_install.cmake
-Makefile
 
 # Diretórios de build comuns
 /build/
