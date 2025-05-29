@@ -1,0 +1,46 @@
+# Ignore arquivos da pasta playstation
+/playstation/
+
+# VSCode settings
+.vscode/
+
+# Build files
+*.o
+*.obj
+*.exe
+*.out
+*.a
+*.so
+*.dll
+
+# Arquivos de depuração
+*.log
+*.pdb
+*.idb
+
+# Arquivos temporários do sistema
+*.tmp
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Arquivos de backup do editor
+*.bak
+
+# Arquivos do CMake
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# Diretórios de build comuns
+/build/
+/lib/
+/dist/
+/Debug/
+/Release/
+
+# Git
+*.orig
