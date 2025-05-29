@@ -6,6 +6,7 @@
 #include "src/converter/converter.h"
 #include "src/inspect/inspect.h"
 #include "include/purchased_games.h"
+#include "include/history.h"
 
 using namespace std;
 
@@ -13,6 +14,17 @@ int main() {
     // Configura a codificação para UTF-8
     setlocale(LC_ALL, "pt_BR.UTF-8");
     cout.imbue(locale(locale(), new codecvt_utf8<wchar_t>));
+
+//Descomentar para converter os arquivos CSV para binário -> 
+// -------------------------------------------------------- 
+//converterCSVparaBinario_Game("playstation/games.csv", "bin/games.bin"); 
+//converterCSVparaBinario_Player("../playstation/players.csv", "../bin/players.bin"); 
+//converterCSVparaBinario_Price("playstation/prices.csv", "bin/prices.bin"); 
+//converterCSVparaBinario_Achievement("playstation/achievements.csv", "bin/achievements.bin"); 
+//converterCSVparaBinario_PurchasedGames("playstation/purchased_games.csv", "bin/purchased_games.bin"); 
+converterCSVparaBinario_History("playstation/history.csv", "bin/history.bin");
+// ----------------------------------------------------------------------------------------
+
 
     int option;
 
@@ -29,7 +41,7 @@ int main() {
         cout << "|-------------------------------------------------------------------------------|" << endl;
         cout << "|                              6 - Construir Árvore B                           |" << endl;
         cout << "|                              7 - Consultar biblioteca de jogador              |" << endl;
-        cout << "|                                                                               |" << endl;
+        cout << "|                              8 - Show All history                             |" << endl;
         cout << "|                              0 - Exit                                         |" << endl;
         cout << "|_______________________________________________________________________________|" << endl;
         cout << "\nEscolha uma opção: ";
@@ -61,6 +73,9 @@ int main() {
             case 7:
                 cout << "\nConsultando biblioteca de jogador...\n";
                 system("./query_library");
+                break;
+            case 8:
+                InspecionarBinario_History("bin/history.bin");
                 break;
             default:
                 cout << "Entrada inválida!" << endl;

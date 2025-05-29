@@ -8,5 +8,6 @@ void converterCSVparaBinario_Player(const std::string& csvFilename, const std::s
 void converterCSVparaBinario_Price(const std::string& csvFilename, const std::string& binFilename);
 void converterCSVparaBinario_Achievement(const std::string& csvFilename, const std::string& binFilename);
 void converterCSVparaBinario_PurchasedGames(const std::string& csvFilename, const std::string& binFilename);
+void converterCSVparaBinario_History(const std::string& csvFilename, const std::string& binFilename);
 
 #endif 
