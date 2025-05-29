@@ -30,31 +30,26 @@ public:
 
 public:
     void insert(int playerId, std::streamoff offset) {
-        // Encontra a posição correta para inserir mantendo a ordem
         BTreeIndexEntry newEntry{playerId, offset};
         auto it = std::lower_bound(entries.begin(), entries.end(), newEntry);
         
-        // Se o ID já existe, atualiza o offset
         if (it != entries.end() && it->playerId == playerId) {
-            std::cout << "AVISO: Atualizando offset para PlayerID existente: " << playerId << std::endl;
             it->offset = offset;
             return;
         }
         
-        // Insere na posição correta
         entries.insert(it, newEntry);
     }
 
     void build() {
-        // Não precisa mais ordenar aqui, pois mantemos ordenado durante a inserção
-        std::cout << "Verificando " << entries.size() << " entradas..." << std::endl;
-        
-        // Verifica se há duplicatas (não deve haver, pois tratamos na inserção)
+        // Verifica duplicatas apenas em modo debug
+        #ifdef DEBUG
         for (size_t i = 1; i < entries.size(); i++) {
             if (entries[i].playerId == entries[i-1].playerId) {
                 std::cout << "AVISO: PlayerID duplicado encontrado: " << entries[i].playerId << std::endl;
             }
         }
+        #endif
     }
 
     std::streamoff search(int playerId) const {
@@ -62,18 +57,7 @@ public:
         auto it = std::lower_bound(entries.begin(), entries.end(), target);
         
         if (it != entries.end() && it->playerId == playerId) {
-            std::cout << "Encontrado na B-Tree: PlayerID=" << it->playerId 
-                     << ", Offset=" << it->offset << std::endl;
             return it->offset;
-        }
-        
-        std::cout << "PlayerID " << playerId << " não encontrado na B-Tree" << std::endl;
-        if (it != entries.end()) {
-            std::cout << "Próximo ID na árvore: " << it->playerId << std::endl;
-        }
-        if (it != entries.begin()) {
-            --it;
-            std::cout << "ID anterior na árvore: " << it->playerId << std::endl;
         }
         
         return -1;
@@ -87,20 +71,14 @@ public:
         }
 
         entries.clear();
-        entries.reserve(10000); // Reserva espaço para evitar realocações
+        entries.reserve(10000);
         
         BTreeIndexEntry entry;
         while (file.read(reinterpret_cast<char*>(&entry.playerId), sizeof(int)) &&
                file.read(reinterpret_cast<char*>(&entry.offset), sizeof(std::streamoff))) {
-            insert(entry.playerId, entry.offset); // Usa o insert ordenado
+            insert(entry.playerId, entry.offset);
         }
         file.close();
-        
-        std::cout << "B-Tree carregada com " << entries.size() << " entradas" << std::endl;
-        if (!entries.empty()) {
-            std::cout << "Primeiro PlayerID: " << entries.front().playerId << std::endl;
-            std::cout << "Último PlayerID: " << entries.back().playerId << std::endl;
-        }
     }
 
     void inspect() const {
@@ -109,6 +87,10 @@ public:
             std::cout << "PlayerID: " << entry.playerId 
                      << " Offset: " << entry.offset << std::endl;
         }
+    }
+
+    size_t size() const {
+        return entries.size();
     }
 };
 

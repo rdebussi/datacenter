@@ -101,13 +101,19 @@ int main() {
     cout << "==================================================================================" << endl;
     cout << "|        Jogador ID: " << pg.playerId << " possui " << pg.gameIds.size() << " jogos  |" << endl;
     cout << "==================================================================================" << endl;
+    
+    int jogosEncontrados = 0;
     for (int gid : pg.gameIds) {
         Game g = readGameById(gameFile, gid);
         if (g.gameId != -1) {
             cout << "| " << g.title << " [" << g.platform << "]\n";
+            jogosEncontrados++;
+        } else {
+            cout << "| ID " << gid << " - Jogo não encontrado na base de dados\n";
         }
     }
     cout << "==================================================================================" << endl;
+    cout << "Total de jogos encontrados: " << jogosEncontrados << " de " << pg.gameIds.size() << endl;
     
     purchaseFile.close();
     gameFile.close();
