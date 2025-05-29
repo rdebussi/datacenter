@@ -12,6 +12,7 @@
 *.a
 *.so
 *.dll
+*.bin
 
 # Arquivos de depuração
 *.log
@@ -41,6 +42,7 @@ Makefile
 /dist/
 /Debug/
 /Release/
+/bin/
 
 # Git
 *.orig
