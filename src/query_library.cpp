@@ -1,12 +1,24 @@
 #include <iostream>
 #include <fstream>
 #include <vector>
+#include <iomanip>
 #include "../include/player.h"
 #include "../include/game.h"
 #include "../include/purchased_games.h"
 #include "btree.h"
 
 using namespace std;
+
+Player readPlayerById(ifstream& playerFile, int id) {
+    Player p;
+    playerFile.clear();
+    playerFile.seekg(0);
+    while (playerFile.read(reinterpret_cast<char*>(&p), sizeof(Player))) {
+        if (p.playerId == id) return p;
+    }
+    p.playerId = -1;
+    return p;
+}
 
 PurchasedGames readPurchasedGames(ifstream& file, streampos offset) {
     PurchasedGames pg;
@@ -75,8 +87,9 @@ int main() {
     cout << "Abrindo arquivos de dados..." << endl;
     ifstream purchaseFile("bin/purchased_games.bin", ios::binary);
     ifstream gameFile("bin/games.bin", ios::binary);
+    ifstream playerFile("bin/players.bin", ios::binary);
 
-    if (!purchaseFile.is_open() || !gameFile.is_open()) {
+    if (!purchaseFile.is_open() || !gameFile.is_open() || !playerFile.is_open()) {
         cerr << "Erro ao abrir arquivos binários." << endl;
         return 1;
     }
@@ -95,11 +108,25 @@ int main() {
         return 0;
     }
 
-    cout << "Lendo dados do jogador no offset " << offset << "..." << endl;
+    // Lê os dados do jogador
+    Player player = readPlayerById(playerFile, pid);
+    if (player.playerId == -1) {
+        cout << "Dados do jogador não encontrados." << endl;
+        return 0;
+    }
+
+    // Lê a biblioteca de jogos
     PurchasedGames pg = readPurchasedGames(purchaseFile, offset);
 
+    // Exibe o perfil do jogador
     cout << "==================================================================================" << endl;
-    cout << "|        Jogador ID: " << pg.playerId << " possui " << pg.gameIds.size() << " jogos  |" << endl;
+    cout << "|                              PERFIL DO JOGADOR                                  |" << endl;
+    cout << "==================================================================================" << endl;
+    cout << "| Nickname: " << setw(67) << left << player.nickname << " |" << endl;
+    cout << "| País: " << setw(71) << left << player.country << " |" << endl;
+    cout << "| Total de jogos: " << setw(62) << left << pg.gameIds.size() << " |" << endl;
+    cout << "==================================================================================" << endl;
+    cout << "|                              BIBLIOTECA DE JOGOS                                |" << endl;
     cout << "==================================================================================" << endl;
     
     int jogosEncontrados = 0;
@@ -117,5 +144,6 @@ int main() {
     
     purchaseFile.close();
     gameFile.close();
+    playerFile.close();
     return 0;
 }
