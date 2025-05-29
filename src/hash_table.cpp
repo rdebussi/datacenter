@@ -1,5 +1,30 @@
 #include "../include/hash_table.h"
 #include <cstring>
+#include <algorithm>
+#include <cctype>
+
+// Função auxiliar para normalizar string (remover case e acentos)
+void normalizeString(const char* input, char* output) {
+    unsigned char c;
+    while ((c = *input++)) {
+        c = tolower(c);
+        if (isalnum(c)) {
+            *output++ = c;
+        }
+    }
+    *output = '\0';
+}
+
+// Função auxiliar para comparar strings normalizadas
+bool compareStrings(const char* str1, const char* str2) {
+    char normalized1[NICKNAME_SIZE];
+    char normalized2[NICKNAME_SIZE];
+    
+    normalizeString(str1, normalized1);
+    normalizeString(str2, normalized2);
+    
+    return strcmp(normalized1, normalized2) == 0;
+}
 
 // Implementação HashTableChaining
 
@@ -13,9 +38,12 @@ size_t HashTableChaining::hashFunction(int playerId) const {
 }
 
 size_t HashTableChaining::hashFunction(const std::string& nickname) const {
-    // Implementação do algoritmo FNV-1a
+    char normalized[NICKNAME_SIZE];
+    normalizeString(nickname.c_str(), normalized);
+    
+    // Implementação do algoritmo FNV-1a com a string normalizada
     size_t hash = 14695981039346656037ULL; // FNV offset basis
-    for (char c : nickname) {
+    for (char c : std::string(normalized)) {
         hash ^= static_cast<size_t>(c);
         hash *= 1099511628211ULL; // FNV prime
     }
@@ -23,9 +51,8 @@ size_t HashTableChaining::hashFunction(const std::string& nickname) const {
 }
 
 void HashTableChaining::insert(const Player& player) {
-    size_t index = hashFunction(player.playerId);
+    size_t index = hashFunction(player.playerId);  // Usando ID em vez do nickname
     
-    // Verifica se já existe colisão neste índice
     if (!table[index].empty()) {
         collisions++;
     }
@@ -45,10 +72,11 @@ Player* HashTableChaining::findByPlayerId(int playerId) {
 }
 
 Player* HashTableChaining::findByNickname(const std::string& nickname) {
-    size_t index = hashFunction(nickname);
-    for (auto& player : table[index]) {
-        if (strcmp(player.nickname, nickname.c_str()) == 0) {
-            return &player;
+    for (auto& bucket : table) {
+        for (auto& player : bucket) {
+            if (compareStrings(player.nickname, nickname.c_str())) {
+                return &player;
+            }
         }
     }
     return nullptr;
@@ -71,7 +99,7 @@ bool HashTableChaining::remove(const std::string& nickname) {
     size_t index = hashFunction(nickname);
     auto& list = table[index];
     for (auto it = list.begin(); it != list.end(); ++it) {
-        if (strcmp(it->nickname, nickname.c_str()) == 0) {
+        if (compareStrings(it->nickname, nickname.c_str())) {
             list.erase(it);
             numElements--;
             return true;
@@ -109,9 +137,12 @@ size_t HashTableOpen::hashFunction(int playerId) const {
 }
 
 size_t HashTableOpen::hashFunction(const std::string& nickname) const {
-    // Implementação do algoritmo FNV-1a com seed diferente
+    char normalized[NICKNAME_SIZE];
+    normalizeString(nickname.c_str(), normalized);
+    
+    // Implementação do algoritmo FNV-1a com a string normalizada
     size_t hash = 14695981039346656037ULL; // FNV offset basis
-    for (char c : nickname) {
+    for (char c : std::string(normalized)) {
         hash ^= static_cast<size_t>(c);
         hash *= 1099511628211ULL; // FNV prime
     }
@@ -178,7 +209,7 @@ Player* HashTableOpen::findByNickname(const std::string& nickname) {
         
         if (!table[currentIndex].isOccupied) {
             if (!table[currentIndex].isDeleted) return nullptr;
-        } else if (strcmp(table[currentIndex].player.nickname, nickname.c_str()) == 0) {
+        } else if (compareStrings(table[currentIndex].player.nickname, nickname.c_str())) {
             return &table[currentIndex].player;
         }
         
@@ -218,7 +249,7 @@ bool HashTableOpen::remove(const std::string& nickname) {
         
         if (!table[currentIndex].isOccupied) {
             if (!table[currentIndex].isDeleted) return false;
-        } else if (strcmp(table[currentIndex].player.nickname, nickname.c_str()) == 0) {
+        } else if (compareStrings(table[currentIndex].player.nickname, nickname.c_str())) {
             table[currentIndex].isDeleted = true;
             numElements--;
             return true;
